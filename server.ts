@@ -60,7 +60,7 @@ server.get('/courses/:id', (request, reply) => {
 server.get('/courses/nanoid/:id', (request, reply) => {
   type Params = {
     nanoID: string,
-    id: string
+    nanoID: string
   }
 
   const params = request.params as Params
