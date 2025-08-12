@@ -1,0 +1,23 @@
+GET http://localhost:3333/
+
+###
+ // Listar cursos
+GET http://localhost:3333/courses
+
+
+###
+// Criar um curso
+POST http://localhost:3333/courses
+Content-Type: application/json
+
+{
+  "title": "Curso de JS"
+}
+
+###
+// Buscar um curso específico
+GET http://localhost:3333/courses/b14be2f3-00e7-46c3-8986-65e118c3bcc3
+
+###
+// Buscar um curso nanoID
+GET http://localhost:3333/courses/nanoid/e2da48bb
