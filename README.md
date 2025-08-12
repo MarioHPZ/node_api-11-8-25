@@ -1,4 +1,4 @@
-# Node API - 11/08/2025
+# Node API 
 
 Projeto simples utilizando **Node.js**, **TypeScript** e **Fastify** para criar uma API leve e performática.
 
