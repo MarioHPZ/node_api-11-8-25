@@ -1,23 +1,16 @@
-GET http://localhost:3333/
-
-###
- // Listar cursos
-GET http://localhost:3333/courses
-
-
-###
-// Criar um curso
 POST http://localhost:3333/courses
 Content-Type: application/json
 
 {
-  "title": "Curso de JS"
+  "title": "Curso de Docker 55",
+  "description": "Teste de descrição"
+
 }
 
 ###
-// Buscar um curso específico
-GET http://localhost:3333/courses/b14be2f3-00e7-46c3-8986-65e118c3bcc3
+
+GET http://localhost:3333/courses
 
 ###
-// Buscar um curso nanoID
-GET http://localhost:3333/courses/nanoid/e2da48bb
+
+GET http://localhost:3333/courses/50f32431-7b24-4c7f-9cd9-9b7c1e97ecdc

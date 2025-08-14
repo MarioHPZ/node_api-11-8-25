@@ -1,9 +1,12 @@
 import fastify from 'fastify'
-import crypto from 'node:crypto'
+import { fastifySwagger } from '@fastify/swagger'
+import { validatorCompiler, serializerCompiler, type ZodTypeProvider, jsonSchemaTransform } from 'fastify-type-provider-zod'
+import { createCourseRoute } from './src/routes/create-course.ts'
+import { getCourseByIdRoute } from './src/routes/get-course-by-id.ts'
+import { getCoursesRoute } from './src/routes/get-courses.ts'
+import scalarAPIReference from '@scalar/fastify-api-reference'
 
-const server = fastify(
-
-  {
+const server = fastify({
   logger: {
     transport: {
       target: 'pino-pretty',
@@ -13,93 +16,31 @@ const server = fastify(
       },
     },
   },
-}
+}).withTypeProvider<ZodTypeProvider>()
 
-)
-
-type Course = {
-  id: string
-  title: string
-  time?: string
-  nanoID?: string
-}
-
-const courses: Course[] = [
-  { id: '1', title: 'Curso de Node.js' },
-  { id: '2', title: 'Curso de React' },
-  { id: '3', title: 'Curso de React Native' },
-]
-
-server.get('/', (request, reply) => {
-  return reply.send({ messsage: 'Hello World' })
-})
-
-server.get('/courses', (request, reply) => {
-  return reply.send({ courses })
-})
-
-server.get('/courses/:id', (request, reply) => {
-  type Params = {
-    id: string
-  }
-
-  const params = request.params as Params
-  const courseId = params.id
-
-  const course = courses.find(course => course.id === courseId)
-
-  if (course) {
-    return { course }
-  }
-
-  return reply.status(404).send()
-})
-
-
-//Buscar por nanoID
-server.get('/courses/nanoid/:id', (request, reply) => {
-  type Params = {
-    nanoID: string,
-    nanoID: string
-  }
-
-  const params = request.params as Params
-  const nanoID = params.id
-
-  const course = courses.find(course => course.nanoID === nanoID)
-
-  if (course) {
-    return { course }
-  }
-
-  return reply.status(404).send()
-})
-
-
-
-server.post('/courses', (request, reply) => {
-  type Body = {
-    title: string,
+if (process.env.NODE_ENV === 'development') {
+  server.register(fastifySwagger, {
+    openapi: {
+      info: {
+        title: 'Desafio Node.js',
+        version: '1.0.0',
       }
+    },
+    transform: jsonSchemaTransform,
+  })
 
-  const courseId = crypto.randomUUID()
+  server.register(scalarAPIReference, {
+    routePrefix: '/docs',
+  })
+}
 
-  const body = request.body as Body
-  const courseTitle = body.title
-  const courseTimestamp = new Date().toISOString()
-  const nanoID = crypto.randomBytes(4).toString('hex')
+server.setValidatorCompiler(validatorCompiler)
+server.setSerializerCompiler(serializerCompiler)
 
-  if (!courseTitle) {
-    return reply.status(400).send({ message: 'Título obrigatório.' })
-  }
+server.register(createCourseRoute)
+server.register(getCourseByIdRoute)
+server.register(getCoursesRoute)
 
-  courses.push({ id: courseId, title: courseTitle, time: courseTimestamp, nanoID: nanoID })
-
-  return reply.status(201).send({ courseId , courseTitle, time: courseTimestamp , nanoID: nanoID })
-})
-
-
-server.listen({ port:3333 }).then(() => {
-
-  console.log(`HTTP server running!`)
+server.listen({ port: 3333 }).then(() => {
+  console.log('HTTP server running!')
 })
